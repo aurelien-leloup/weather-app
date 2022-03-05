@@ -1,0 +1,37 @@
+.weather-container {
+  height: 100%;
+  background-color: #ecf0f1;
+
+  h1 {
+    font-size: 48px;
+  }
+
+  ::ng-deep .mat-input {
+    width: 100px;
+  }
+
+  ::ng-deep.mat-form-field-flex .mat-form-field-outline {
+    background-color: white;
+    border-radius: 5px;
+  }
+
+  ::ng-deep.mat-form-field{
+    font-size: 24px;
+    width: 500px;
+    margin-bottom: 0;
+  }
+
+  ::ng-deep.mat-form-field-wrapper{
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .forecasts {
+    margin-top: 40px;
+    width: 50%;
+  }
+
+  footer {
+    margin-top: 20px;
+  }
+}
