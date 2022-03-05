@@ -1,21 +1,21 @@
 <div fxLayout="column" fxLayoutAlign="center center" class="weather-container">
   <h1>A simple weather app</h1>
   <mat-form-field appearance="outline">
-    <input type="text"
+    <input #query
+           type="text"
            placeholder="Type a city"
-           matInput
-           [(ngModel)]="query"
-           (ngModelChange)="onQueryChanged()">
+           matInput>
 
   </mat-form-field>
-  <span *ngIf="location">
-      Showing the weather in : {{location.name+', '+location.country}}
+  <span *ngIf="location$ | async as location">
+      Showing the weather in : {{location.name + ', ' + location.country}}
     </span>
-  <div class="forecasts" fxLayout="row" fxLayoutAlign="space-around center" >
+  <div class="forecasts" fxLayout="row" fxLayoutAlign="space-around center" *ngIf="forecasts$ | async as forecasts">
     <mat-card *ngFor="let forecast of forecasts">
       <mat-card-title>{{getDayFromDate(forecast)}}</mat-card-title>
       <img [src]="forecast.day.condition.icon" alt="weather icon">
-      <span>{{math.round(forecast.day.maxtemp_c)}}°</span>&nbsp;&nbsp;<span style="color: #9aa0a6">{{math.round(forecast.day.mintemp_c)}}°</span>
+      <span>{{math.round(forecast.day.maxtemp_c)}}°</span>&nbsp;&nbsp;<span
+      style="color: #9aa0a6">{{math.round(forecast.day.mintemp_c)}}°</span>
     </mat-card>
   </div>
   <footer>

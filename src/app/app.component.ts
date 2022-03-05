@@ -1,9 +1,9 @@
-import { Component, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { WeatherService } from "./weather.service";
 import { AutocompleteLocation } from "./location";
 import { WeatherForecast } from "./forecast";
 import * as dayjs from "dayjs";
-import { Subscription } from "rxjs";
+import { distinctUntilChanged, filter, fromEvent, map, Observable, switchMap } from "rxjs";
 
 
 @Component({
@@ -11,33 +11,31 @@ import { Subscription } from "rxjs";
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnDestroy {
+export class AppComponent implements AfterViewInit {
 
-  forecasts: WeatherForecast[] = [];
-  location: AutocompleteLocation | undefined;
-  query = '';
+  @ViewChild('query') queryInput: ElementRef;
+
+  forecasts$: Observable<WeatherForecast[]>;
+  location$: Observable<AutocompleteLocation>;
+
   math = Math;
-  subscriptions = new Subscription();
-
 
   constructor(private weatherService: WeatherService) {
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-  }
+  ngAfterViewInit() {
+    this.location$ = fromEvent<Event>(this.queryInput.nativeElement, 'keyup').pipe(
+      map(event => (event.target as HTMLInputElement).value),
+      distinctUntilChanged(),
+      filter(query => query.length > 3),
+      switchMap(query => this.weatherService.autocomplete(query)),
+      map(locations => locations[0]));
 
-  onQueryChanged() {
-    if (this.query.length > 3) {
-      this.subscriptions.add(this.weatherService.autocomplete(this.query).subscribe(
-        (locations) => {
-          this.location = locations[0];
-          this.subscriptions.add(this.weatherService.forecast(this.location.lat, this.location.lon).subscribe(
-            forecast => this.forecasts = forecast.forecast.forecastday
-          ));
-        }
-      ));
-    }
+
+    this.forecasts$ = this.location$.pipe(
+      switchMap(location => this.weatherService.forecast(location.lat, location.lon)),
+      map(forecast => forecast.forecast.forecastday)
+    )
   }
 
   getDayFromDate(forecast: WeatherForecast) {
