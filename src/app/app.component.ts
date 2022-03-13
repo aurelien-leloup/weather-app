@@ -18,6 +18,7 @@ export class AppComponent implements OnDestroy {
   query = '';
   math = Math;
   subscriptions = new Subscription();
+  error: String = '';
 
 
   constructor(private weatherService: WeatherService) {
@@ -28,15 +29,19 @@ export class AppComponent implements OnDestroy {
   }
 
   onQueryChanged() {
+    this.error = '';
     if (this.query.length > 3) {
-      this.subscriptions.add(this.weatherService.autocomplete(this.query).subscribe(
-        (locations) => {
+      this.subscriptions.add(this.weatherService.autocomplete(this.query).subscribe({
+        next: (locations) => {
           this.location = locations[0];
-          this.subscriptions.add(this.weatherService.forecast(this.location.lat, this.location.lon).subscribe(
-            forecast => this.forecasts = forecast.forecast.forecastday
+          this.subscriptions.add(this.weatherService.forecast(this.location.lat, this.location.lon).subscribe({
+              next: forecast => this.forecasts = forecast.forecast.forecastday,
+              error: error => this.error = 'Error while calling the forecast API. Code : ' + error.status
+            }
           ));
-        }
-      ));
+        },
+        error: error => this.error = 'Error while calling the autocomplete API. Code : ' + error.status
+      }));
     }
   }
 

@@ -6,8 +6,10 @@
            matInput
            [(ngModel)]="query"
            (ngModelChange)="onQueryChanged()">
-
   </mat-form-field>
+  <p *ngIf="error" class="error">
+    {{error}}
+  </p>
   <span *ngIf="location">
       Showing the weather in : {{location.name+', '+location.country}}
     </span>
