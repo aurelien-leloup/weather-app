@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiKey: 'REPLACE_WITH_YOUR_OWN_KEY'
+  apiKey: '{SECRET_API_KEY}'
 };
 
 /*
